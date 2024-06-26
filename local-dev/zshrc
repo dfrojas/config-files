@@ -1,0 +1,1 @@
+alias mymake='make -C /usr/local/bin'
