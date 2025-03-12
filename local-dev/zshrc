@@ -1,1 +1,35 @@
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
+# source /Users/diegorojas/.docker/init-zsh.sh || true # Added by Docker Desktop
+
+export NVM_DIR="$HOME/.nvm"
+    [ -s "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" ] && \. "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" # This loads nvm
+    [ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
+
+# Created by `pipx` on 2023-12-11 17:46:38
+export PATH="$PATH:/Users/$SHELL_USERNAME/.local/bin"
+export PATH="/Users/$SHELL_USERNAME/.local/bin:$PATH"
+
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+
+# Mis alias
 alias mymake='make -C /usr/local/bin'
+alias ll='ls -la'
+
+eval "$(rbenv init -)"
+
+# Added by Windsurf
+export PATH="/Users/$SHELL_USERNAME/.codeium/windsurf/bin:$PATH"
+
+# Define colors
+USER_COLOR="%F{cyan}"   # User and host in cyan
+PATH_COLOR="%F{green}"  # Path in green
+RESET="%f"              # Reset color
+
+# Set prompt
+PROMPT="${USER_COLOR}%n@%m${RESET} ${PATH_COLOR}%~${RESET} %# "

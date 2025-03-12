@@ -8,4 +8,3 @@ py-here:
 	pyenv local $(VERSION)
 	cd $(PWD) && poetry env use python$(VERSION)
 	@echo "$(BOLD)$(GREEN) Todo ok ✨ ✨ ✨"
-
