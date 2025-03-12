@@ -1,9 +1,10 @@
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+
+export RBENV_ROOT="$HOME/.rbenv"
+command -v rbenv >/dev/null || export PATH="$RBENV_ROOT/bin:$PATH"
+eval "$(rbenv init -)"
 
 # source /Users/diegorojas/.docker/init-zsh.sh || true # Added by Docker Desktop
 
@@ -20,8 +21,6 @@ export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 # Mis alias
 alias mymake='make -C /usr/local/bin'
 alias ll='ls -la'
-
-eval "$(rbenv init -)"
 
 # Added by Windsurf
 export PATH="/Users/$SHELL_USERNAME/.codeium/windsurf/bin:$PATH"
