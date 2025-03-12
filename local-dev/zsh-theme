@@ -1,8 +1,14 @@
-# PROMPT="%(?:%{$fg_bold[green]%}%1{➜%} :%{$fg_bold[red]%}%1{➜%} ) %{$fg[cyan]%c%{$reset_color%}"
-PROMPT="%(?:%{$fg_bold[green]%}%1{➜%} :%{$fg_bold[red]%}%1{➜%} ) %{$fg[cyan]%~%{$reset_color%}"
-PROMPT+=' $(git_prompt_info)'
+# Define Colors
+USER_COLOR="%F{violet}"
+RESET="%f"
+ARROW_COLOR="%F{green}"
+PATH_COLOR="%F{cyan}"
 
-ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
-ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
-ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}%1{✗%}"
-ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
+# Set the prompt
+PROMPT="${USER_COLOR}%n@%m${RESET} ${PATH_COLOR}%~${RESET} ${ARROW_COLOR}➜ ${RESET} $(git_prompt_info)"
+
+
+ZSH_THEME_GIT_PROMPT_PREFIX="%F{blue}git:(%F{red}"
+ZSH_THEME_GIT_PROMPT_SUFFIX="%f) "
+ZSH_THEME_GIT_PROMPT_DIRTY="%F{yellow}✗%f"
+ZSH_THEME_GIT_PROMPT_CLEAN=""
