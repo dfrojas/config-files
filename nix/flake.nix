@@ -1,5 +1,6 @@
 # Claude Code has to be installed manually.
 # Ghostty has to be installed manually.
+
 {
  description = "Diego's Home Manager configuration";
 
@@ -66,11 +67,11 @@
                 globals.mapleader = " "; # Change the mapleader to Space
                 colorschemes.tokyonight.enable = true;
                 extraConfigVim = ''
-            " Hide Airline sections Y and Z completely
+                " Hide Airline sections Y and Z completely
                 let g:airline_section_z = ""
                 let g:airline_section_y = ""
                 let g:airline_skip_empty_sections = 1
-            '';
+                '';
                 opts = {
                     number = true;
                     clipboard = "unnamedplus";
@@ -80,6 +81,11 @@
                     expandtab = true;   # Convert tabs to spaces
                     softtabstop = 4;    # Number of spaces for tab in insert mode
                 };
+                autoCmd = [{
+                    event = ["BufWritePre"];
+                    pattern = ["*"];
+                    command = "%s/\\s\\+$//e";
+                }];
                 plugins = {
                     web-devicons.enable = true;
                     telescope = {
