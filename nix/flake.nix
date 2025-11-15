@@ -29,6 +29,51 @@
 
             programs.home-manager.enable = true;
 
+            # Get my SSH keys from Bitwarden
+            home.activation.setupSSHKeys = lib.hm.dag.entryAfter ["writeBoundary"] ''
+              SSH_DIR="${config.home.homeDirectory}/.ssh"
+              mkdir -p "$SSH_DIR"
+
+              # Only do bw login if any of the exppected keys does not exists
+              if [ ! -f "$SSH_DIR/id_ed25519" ] || [ ! -f "$SSH_DIR/gy_2025" ] || [ ! -f "$SSH_DIR/id_rsa_digital_ocean_multihub" ]; then
+                BW="${pkgs.bitwarden-cli}/bin/bw"
+
+                # Verify if it is logged in
+                if ! $BW login --check >/dev/null 2>&1; then
+                  echo -e "\033[0;31mWarning: Bitwarden not logged in. SSH keys won't be retrieved Run bw login and export the BW_SESSION.\033[0m"
+                else
+                  # Personal (id_ed25519)
+                  if [ ! -f "$SSH_DIR/id_ed25519" ]; then
+                    $BW get item "SSH - Personal" | ${pkgs.jq}/bin/jq -r '.notes' > "$SSH_DIR/id_ed25519"
+                    chmod 600 "$SSH_DIR/id_ed25519"
+                    ${pkgs.openssh}/bin/ssh-keygen -y -f "$SSH_DIR/id_ed25519" > "$SSH_DIR/id_ed25519.pub"
+                    echo "✓ SSH key 'id_ed25519' created"
+                  fi
+
+                  # GoodYear (gy_2025)
+                  if [ ! -f "$SSH_DIR/gy_2025" ]; then
+                    $BW get item "SSH - GoodYear" | ${pkgs.jq}/bin/jq -r '.notes' > "$SSH_DIR/gy_2025"
+                    chmod 600 "$SSH_DIR/gy_2025"
+                    ${pkgs.openssh}/bin/ssh-keygen -y -f "$SSH_DIR/gy_2025" > "$SSH_DIR/gy_2025.pub"
+                    echo "✓ SSH key 'gy_2025' created"
+                  fi
+
+                  # DigitalOcean (id_rsa_digital_ocean_multihub)
+                  if [ ! -f "$SSH_DIR/id_rsa_digital_ocean_multihub" ]; then
+                    $BW get item "SSH - DigitalOcean" | ${pkgs.jq}/bin/jq -r '.notes' > "$SSH_DIR/id_rsa_digital_ocean_multihub"
+                    chmod 600 "$SSH_DIR/id_rsa_digital_ocean_multihub"
+                    ${pkgs.openssh}/bin/ssh-keygen -y -f "$SSH_DIR/id_rsa_digital_ocean_multihub" > "$SSH_DIR/id_rsa_digital_ocean_multihub.pub"
+                    echo "✓ SSH key 'id_rsa_digital_ocean_multihub' created"
+                  fi
+                fi
+              fi
+            '';
+
+            # Bitwarden CLI
+            home.packages = with pkgs; [
+              bitwarden-cli
+            ];
+
             # Create workdirs for code projects if does not exists
             home.activation.createWorkspaces = lib.hm.dag.entryAfter ["writeBoundary"] ''
               $DRY_RUN_CMD mkdir -p $VERBOSE_ARG "${config.home.homeDirectory}/Documents/personal"
@@ -62,20 +107,20 @@
                   condition = "gitdir:~/Documents/personal/";
                   contents = {
                     user = {
-                      email = "personal@example.com";
-                      name = "Diego Rojas";
+                      email = "rojastorrado@gmail.com";
+                      name = "Diego Fernando Rojas";
                     };
-                    core.sshCommand = "ssh -i ~/.ssh/id_ed25519_personal";
+                    core.sshCommand = "ssh -i ~/.ssh/id_ed25519";
                   };
                 }
                 {
                   condition = "gitdir:~/Documents/work/";
                   contents = {
                     user = {
-                      email = "diego.rojas@work.com";
-                      name = "Diego Rojas";
+                      email = "diego_rojas@goodyear.com";
+                      name = "Diego Fernando Rojas";
                     };
-                    core.sshCommand = "ssh -i ~/.ssh/id_ed25519_work";
+                    core.sshCommand = "ssh -i ~/.ssh/gy_2025";
                   };
                 }
               ];
@@ -96,6 +141,7 @@
                 shellAliases = {
                     hm = "home-manager switch --flake ~/Documents/personal/opensource/config-files/nix#Diego.Rojas";
                     rs = "exec zsh";
+                    bwu = "export BW_SESSION=$(bw unlock --raw)";
                 };
                 initExtra = ''
                     export PATH="$HOME/.local/bin:$PATH"
