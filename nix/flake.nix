@@ -22,12 +22,18 @@
 
         modules = [
             nixvim.homeModules.nixvim
-            {
+            ({ config, lib, pkgs, ... }: {
             home.username = "Diego.Rojas";
             home.homeDirectory = "/Users/Diego.Rojas";
             home.stateVersion = "24.05";
 
             programs.home-manager.enable = true;
+
+            # Create workdirs for code projects if does not exists
+            home.activation.createWorkspaces = lib.hm.dag.entryAfter ["writeBoundary"] ''
+              $DRY_RUN_CMD mkdir -p $VERBOSE_ARG "${config.home.homeDirectory}/Documents/personal"
+              $DRY_RUN_CMD mkdir -p $VERBOSE_ARG "${config.home.homeDirectory}/Documents/work"
+            '';
 
             # Manage Ghostty config file
             home.file."Library/Application Support/com.mitchellh.ghostty/config".text = ''
@@ -37,7 +43,43 @@
                 keybind = super+u=new_split:up
                 keybind = super+r=new_split:right
                 keybind = super+l=new_split:left
+                keybind = shift+enter=text:\n
+                theme = TokyoNight
             '';
+
+            programs.gh = {
+                enable = true;
+                settings = {
+                    git_protocol = "ssh";
+                    editor = "nvim";
+                };
+            };
+
+            programs.git = {
+              enable = true;
+              includes = [
+                {
+                  condition = "gitdir:~/Documents/personal/";
+                  contents = {
+                    user = {
+                      email = "personal@example.com";
+                      name = "Diego Rojas";
+                    };
+                    core.sshCommand = "ssh -i ~/.ssh/id_ed25519_personal";
+                  };
+                }
+                {
+                  condition = "gitdir:~/Documents/work/";
+                  contents = {
+                    user = {
+                      email = "diego.rojas@work.com";
+                      name = "Diego Rojas";
+                    };
+                    core.sshCommand = "ssh -i ~/.ssh/id_ed25519_work";
+                  };
+                }
+              ];
+            };
 
             programs.zsh = {
                 enable = true;
@@ -52,7 +94,7 @@
                 ];
                 };
                 shellAliases = {
-                    hm = "home-manager switch --flake ~/Documents/opensource/config-files/nix#Diego.Rojas";
+                    hm = "home-manager switch --flake ~/Documents/personal/opensource/config-files/nix#Diego.Rojas";
                     rs = "exec zsh";
                 };
                 initExtra = ''
@@ -196,7 +238,7 @@
                 }
                 ];
             };
-            }
+            })
         ];
         };
     };
