@@ -204,6 +204,11 @@
                       pattern = [ "*" ];
                       command = "%s/\\s\\+$//e";
                     }
+                    {
+                      event = ["FileType"];
+                      pattern = ["nix"];
+                      command = "setlocal tabstop=2 shiftwidth=2 softtabstop=2";
+                    }
                   ];
                   plugins = {
                     web-devicons.enable = true;
