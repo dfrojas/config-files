@@ -1,0 +1,15 @@
+{
+  "model": "sonnet",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/Diego.Rojas/.pyenv/shims/python3 ~/.claude/hooks/langfuse_hook.py"
+          }
+        ]
+      }
+    ]
+  }
+}

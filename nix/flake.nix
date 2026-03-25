@@ -97,6 +97,17 @@
                 home.packages = with pkgs; [
                   bitwarden-cli
                   nixfmt-rfc-style
+                  chruby
+                  # ruby_3_4
+                  bundix
+                  # gcc
+                  # gnumake
+                  # pkg-config
+                  # libiconv
+                  # openssl
+                  # zlib
+                  # darwin.apple_sdk.frameworks.CoreServices
+                  # darwin.apple_sdk.frameworks.Foundation
                 ];
 
                 # Create workdirs for code projects if does not exists
@@ -119,6 +130,9 @@
                   keybind = shift+enter=text:\n
                   theme = TokyoNight
                 '';
+
+                home.file.".claude/hooks/langfuse_hook.py".source =
+                  config.lib.file.mkOutOfStoreSymlink "${config.dotfiles}/claude/hooks/langfuse_hook.py";
 
                 programs.gh = {
                   enable = true;
@@ -172,10 +186,18 @@
                     bwu = "export BW_SESSION=$(bw unlock --raw)";
                   };
                   initExtra = ''
+                    export PYENV_ROOT="$HOME/.pyenv"
+                    export PATH="$PYENV_ROOT/bin:$PATH"
+                    eval "$(pyenv init -)"
                     export PATH="$HOME/.local/bin:$PATH"
                     # PROMPT='%2~ %# '
                     PROMPT="%(?:%{$fg_bold[green]%}%1{➜%} :%{$fg_bold[red]%}%1{➜%} ) %{$fg[cyan]%}%2~%{$reset_color%}"
                     PROMPT+=' $(git_prompt_info)'
+                    # Initialize chruby
+                    source ${pkgs.chruby}/share/chruby/chruby.sh
+                    source ${pkgs.chruby}/share/chruby/auto.sh
+                    # Add Nix Ruby to RUBIES
+                    # RUBIES+=(${pkgs.ruby_3_4})
                   '';
                 };
 
