@@ -128,6 +128,8 @@
                   keybind = super+r=new_split:right
                   keybind = super+l=new_split:left
                   keybind = shift+enter=text:\n
+                  keybind = super+left=goto_window:previous
+                  keybind = super+right=goto_window:next
                   theme = TokyoNight
                 '';
 
@@ -239,6 +241,7 @@
                     };
                     nvim-tree = {
                       enable = true;
+                      settings.git.ignore = false;
                     };
                     airline = {
                       enable = true;
