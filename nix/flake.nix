@@ -234,6 +234,7 @@
                       command = "setlocal tabstop=2 shiftwidth=2 softtabstop=2";
                     }
                   ];
+                  extraPlugins = with pkgs.vimPlugins; [ vim-eunuch ];
                   plugins = {
                     web-devicons.enable = true;
                     telescope = {
