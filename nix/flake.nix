@@ -213,6 +213,47 @@
                     let g:airline_section_y = ""
                     let g:airline_skip_empty_sections = 1
                   '';
+                  extraConfigLua = ''
+                    local function project_search()
+                      require('telescope.builtin').live_grep({
+                        attach_mappings = function(prompt_bufnr, _)
+                          local actions = require('telescope.actions')
+                          actions.select_default:replace(function()
+                            actions.send_to_qflist(prompt_bufnr)
+                            vim.cmd('Trouble qflist toggle')
+                          end)
+                          return true
+                        end,
+                      })
+                    end
+
+                    vim.keymap.set('n', '<leader>F', project_search, { desc = 'Search across project (Trouble panel)', silent = true })
+
+                    require("trouble").setup({
+                      auto_preview = false,
+                      win = {
+                        position = "left",
+                        size = 50,
+                      },
+                      keys = {
+                        ["<cr>"] = {
+                          action = function(view, ctx)
+                            if not ctx.item then
+                              return
+                            end
+                            -- If no editor pane exists yet (e.g. only the file tree and this
+                            -- panel are open), create one; otherwise reuse whatever is already there.
+                            local main = view:main()
+                            if main.win == vim.api.nvim_get_current_win() then
+                              vim.cmd("vsplit")
+                            end
+                            view:jump(ctx.item)
+                          end,
+                          desc = "Open result in the editor area",
+                        },
+                      },
+                    })
+                  '';
                   opts = {
                     number = true;
                     clipboard = "unnamedplus";
@@ -279,6 +320,22 @@
                         ];
                       };
                     };
+                    # Fixed results panel for LSP references/definitions and diagnostics,
+                    # replacing the default floating quickfix popup.
+                    # Full config lives in extraConfigLua's require("trouble").setup(...) below,
+                    # since it also needs a Lua-function keymap that plain nix settings can't express.
+                    trouble.enable = true;
+                    # Inline git blame + hunk navigation
+                    gitsigns = {
+                      enable = true;
+                      settings = {
+                        current_line_blame = true;
+                        current_line_blame_opts = {
+                          delay = 300;
+                          virt_text_pos = "eol";
+                        };
+                      };
+                    };
                   };
                   keymaps = [
                     {
@@ -292,7 +349,16 @@
                     }
                     {
                       mode = "n";
-                      key = "<leader>ff";
+                      key = "<leader>n";
+                      action = ":tabnew<CR>";
+                      options = {
+                        silent = true;
+                        desc = "New empty tab";
+                      };
+                    }
+                    {
+                      mode = "n";
+                      key = "<leader>p";
                       action = ":Telescope find_files<CR>";
                       options = {
                         silent = true;
@@ -301,11 +367,11 @@
                     }
                     {
                       mode = "n";
-                      key = "<leader>fg";
-                      action = ":Telescope live_grep<CR>";
+                      key = "<leader>f";
+                      action = "/";
                       options = {
                         silent = true;
-                        desc = "Search in files";
+                        desc = "Search in current file";
                       };
                     }
                     {
