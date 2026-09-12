@@ -226,6 +226,29 @@ def get_model(msg: Dict[str, Any]) -> str:
         return m.get("model") or "claude"
     return "claude"
 
+def get_usage(assistant_msgs: List[Dict[str, Any]]) -> Dict[str, int]:
+    """Sums the real Anthropic API usage across a turn's assistant messages
+    and maps it to the keys Langfuse expects for usage_details, so the UI
+    reports actual token counts (including cache) instead of an inferred
+    estimate. See https://github.com/langfuse/langfuse-docs/issues/2718."""
+    input_tokens = 0
+    output_tokens = 0
+    cache_read = 0
+    cache_creation = 0
+    for msg in assistant_msgs:
+        m = msg.get("message", {})
+        usage = m.get("usage", {})
+        input_tokens += usage.get("input_tokens", 0)
+        output_tokens += usage.get("output_tokens", 0)
+        cache_read += usage.get("cache_read_input_tokens", 0)
+        cache_creation += usage.get("cache_creation_input_tokens", 0)
+    return {
+        "input": input_tokens,
+        "output": output_tokens,
+        "cache_read_input_tokens": cache_read,
+        "cache_creation_input_tokens": cache_creation,
+    }
+
 def get_message_id(msg: Dict[str, Any]) -> Optional[str]:
     m = msg.get("message")
     if isinstance(m, dict):
@@ -431,6 +454,7 @@ def emit_turn(langfuse: Langfuse, session_id: str, turn_num: int, turn: Turn, tr
                 model=model,
                 input={"role": "user", "content": user_text},
                 output={"role": "assistant", "content": assistant_text},
+                usage_details=get_usage(turn.assistant_msgs),
                 metadata={
                     "assistant_text": assistant_text_meta,
                     "tool_count": len(tool_calls),
