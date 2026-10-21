@@ -173,6 +173,12 @@
                 programs.zsh = {
                   enable = true;
                   enableCompletion = true;
+                  initContent = lib.mkBefore ''
+                    # Keep Nix available if a macOS update resets /etc/zshrc.
+                    if [ -r /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+                      source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+                    fi
+                  '';
                   oh-my-zsh = {
                     enable = true;
                     theme = "robbyrussell";
@@ -192,6 +198,7 @@
                     export PATH="$PYENV_ROOT/bin:$PATH"
                     eval "$(pyenv init -)"
                     export PATH="$HOME/.local/bin:$PATH"
+                    export PATH="$HOME/.nix-profile/bin:$PATH"
                     # PROMPT='%2~ %# '
                     PROMPT="%(?:%{$fg_bold[green]%}%1{➜%} :%{$fg_bold[red]%}%1{➜%} ) %{$fg[cyan]%}%2~%{$reset_color%}"
                     PROMPT+=' $(git_prompt_info)'
